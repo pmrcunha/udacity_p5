@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-	<html lang="en">
+	<html lang="en" data-framework="knockoutjs">
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,14 +15,18 @@
 
 	<body>
 		<header>
-			<p data-bind="text: firstName"></p>
+			<span data-bind="text: firstName"></span>
 		</header>
-		<section class="map-container">
+		<section class="map-container"></section>
+		<div id="map"></div>
 
-		</section>
 		<section class="list-container">
 
 		</section>
+		<!-- TODO: wrap the API key into a server side function that is called by my JS script -->
+		<script async defer
+			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChX2asEnm5W2cdGJJv-E-gBrJjKgjSyHI&callback=initMap">
+		</script>
 	</body>
 	</html>
 

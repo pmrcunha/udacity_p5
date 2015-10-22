@@ -2,12 +2,26 @@
  * LALALA CSS stuff
  */
 
+html, body {
+	height: 100%;
+	margin: 0;
+	padding: 0;
+}
+
 header {
 	position: fixed;
 }
 
+#map {
+	width: 70%;
+	height: 60%;
+	margin: 0 auto;
+}
+
 .map-container {
-	position: fixed;
+	/*position: fixed;
+	width:70%;*/
+	margin: 0 auto;
 }
 
 .list-container {
