@@ -1,0 +1,24 @@
+{
+  "name": "udacity_p5",
+  "version": "0.0.0",
+  "description": "Project 5 of the Front End nanodegree at Udacity ",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "~0.4.5"
+  },
+  "devDependencies": {
+    "grunt-contrib-watch": "~0.6.1"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/pmrcunha/udacity_p5.git"
+  },
+  "author": "Paulo Cunha",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/pmrcunha/udacity_p5/issues"
+  }
+}

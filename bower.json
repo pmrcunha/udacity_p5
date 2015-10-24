@@ -1,0 +1,27 @@
+{
+  "name": "udacity_p5",
+  "description": "Project 5 of the Front End nanodegree at Udacity",
+  "main": "Gruntfile.js",
+  "authors": [
+    "Paulo Cunha"
+  ],
+  "license": "BSD-2-Clause",
+  "homepage": "https://github.com/pmrcunha/udacity_p5",
+  "moduleType": [
+    "node"
+  ],
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "vendor",
+    "test",
+    "tests"
+  ],
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "knockout": "~3.3.0",
+    "typeahead.js": "~0.11.1"
+  }
+}
