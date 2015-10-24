@@ -6,14 +6,14 @@
 		<meta name="description" content="">
 		<meta name="author" content="Paulo Cunha">
 		<title>MapApp: an app with a map</title>
-
-		<script src="js/knockout.js"></script>
+		<script src="../vendor/knockout/dist/knockout.js"></script>
 		<link href="css/style.css" rel="stylesheet">
-		<script src="js/main.js"></script>
+
 
 	</head>
 
 	<body>
+		<strong data-bind="text: firstName"></strong>
 		<header>
 			<span data-bind="text: firstName"></span>
 		</header>
@@ -23,6 +23,8 @@
 		<section class="list-container">
 
 		</section>
+		<!-- ko-observable needs a loaded page. use window.onLoad in main.js or keep the script down here -->
+		<script src="js/main.js"></script>
 		<!-- TODO: wrap the API key into a server side function that is called by my JS script -->
 		<script async defer
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChX2asEnm5W2cdGJJv-E-gBrJjKgjSyHI&callback=initMap">
