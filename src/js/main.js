@@ -106,24 +106,6 @@ function initMap() {
 	}
 }
 
-// Search
-function ViewModel() {
-	this.searchQuery = ko.observable("Search");
-
-	this.locations = ko.observableArray(placeData);
-
-	this.selectLocation = function(location) {
-		var i = placeData.indexOf(location);
-		infoWindows[i].open(map, markers[i]);
-	}
-
-};
-
-ko.applyBindings(new ViewModel());
-
-
-
-
 // Google Maps API Styling
 var mapStyles = [
 	{
@@ -158,3 +140,43 @@ var mapStyles = [
 		]
 	}
 ];
+
+// Search
+function ViewModel() {
+	var self = this;
+
+	//Data
+
+	self.searchQuery = ko.observable("Search");
+	self.searchResults = ko.observableArray(placeData);
+
+
+	//Behaviors
+
+	self.selectLocation = function(location) {
+		var i = placeData.indexOf(location);
+		infoWindows[i].open(map, markers[i]);
+	}
+
+	self.search = function() {
+		if(self.searchQuery() == "" || self.searchQuery() == "Search") {
+			self.searchResults(placeData);
+			return;
+		}
+		self.searchResults.removeAll();
+		for(var i=0; i < placeData.length; i++) {
+			if(placeData[i].title.toLowerCase().indexOf(self.searchQuery().toLowerCase()) >=0) {
+				self.searchResults.push(placeData[i]);
+			}
+		}
+	}
+
+	self.searchQuery.subscribe(self.search);
+
+};
+
+// var only for debugging
+var VModel = new ViewModel();
+ko.applyBindings(VModel);
+
+// Wikipedia API

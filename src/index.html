@@ -13,7 +13,7 @@
 <body>
 	<header>
 		<input id="search-box" type="search" data-bind="textInput: searchQuery">
-		<div id="search-field">
+		<div id="search-field" data-bind="visible: searchResults().length > 0">
 			<strong id="search-test" data-bind="text: searchQuery"></strong>
 		</div>
 	</header>
@@ -22,7 +22,7 @@
 
 
 		<section class="list-container">
-			<ul data-bind="foreach: locations">
+			<ul data-bind="foreach: searchResults">
 				<li data-bind="click: $root.selectLocation">
 					<strong data-bind="text: title"></strong>
 					<span data-bind="text: category"></span>
