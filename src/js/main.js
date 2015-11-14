@@ -61,76 +61,90 @@ var placeData = [
 	}
 ];
 
-// Constructors
-
-// ViewModel
-
 //Google Maps API
 
-var infoWindows = [];
-var markers = [];
-var map;
+var Map = function(mapOptions, mapStyles) {
+	this.mapStyles = mapStyles;
+	this.infoWindows = [];
+	this.markers = [];
+	this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+};
 
-function initMap() {
-	map = new google.maps.Map(document.getElementById('map'), {
-		center: {lat: 59.332309, lng: 18.064582},
-		zoom: 14,
-		mapTypeControl: false,
-		panControl: false,
-		zoomControl: false,
-		streetViewControl: false,
-		styles: mapStyles
-	});
+Map.prototype.openInfoWindow = function(i) {
+	this.infoWindows[i].open(this.map, this.markers[i]);
+};
 
-	for(var i=0; i<placeData.length; i++) {
-		markers[i] = new google.maps.Marker({
-			position: placeData[i].pos,
-			title: placeData[i].title,
-			map: map
-		});
+Map.prototype.clearMarkers = function() {
+	/*for(var i=0; i< this.markers.length; i++) {
+		self.markers[i].setMap(null);
+	}*/
+	self.markers = [];
+};
 
-		infoWindows[i] = new google.maps.InfoWindow({
-			content: '<h1>' + placeData[i].title + '</h1>' +
-				'<h3>' + placeData[i].category + '</h3>' +
-				'<p>' + placeData[i].content + '</p>'
+Map.prototype.updateMarkers = function(searchResults) {
+	var self = this;
+	//self.clearMarkers();
+	for(var i=0; i<searchResults.length; i++) {
+		var markerOptions = {
+			position: searchResults[i].pos,
+			title: searchResults[i].title
+		};
+
+		self.markers[i] = new google.maps.Marker(markerOptions);
+		self.markers[i].setMap(self.map);
+
+		self.infoWindows[i] = new google.maps.InfoWindow({
+			content: '<h1>' + searchResults[i].title + '</h1>' +
+			'<h3>' + searchResults[i].category + '</h3>' +
+			'<p>' + searchResults[i].content + '</p>'
 		});
 
 		/* A closure is required to add a listener inside a loop,
 		 * otherwise the function will use the last value of the iterator.
 		 */
 		(function(_i) {
-			markers[_i].addListener('click', function() {
-				infoWindows[_i].open(map, markers[_i]);
+			self.markers[_i].addListener('click', function() {
+				self.openInfoWindow(_i);
 			});
 		})(i);
 	}
-}
+};
 
-// Google Maps API Styling
-var mapStyles = [
+/*Map.prototype.removeMarkers = function(excluded) {
+	for(var i=0; i<excluded.length; i++) {
+		if(excluded[i].title == this.markers)
+	}
+}*/
+
+var map;
+
+function initMap() {
+
+	// Google Maps API Styling
+	var mapStyles = [
 	{
 		stylers: [
-			{ saturation: -40},
-			{lightness: 20}
+		{ saturation: -40},
+		{lightness: 20}
 		]
 	},{
 		featureType: "road",
 		elementType: "labels",
 		stylers: [
-			{visibility: "off"}
+		{visibility: "off"}
 		]
 	},{
 		featureType: "road",
 		elementType: "geometry",
 		stylers: [
-			{lightness: 100},
-			{visibility: "simplified"}
+		{lightness: 100},
+		{visibility: "simplified"}
 		]
 	},{
 		featureType: "road",
 		elementType: "labels",
 		stylers: [
-			{visibility: "off"}
+		{visibility: "off"}
 		]
 	},{
 		featureType: "poi",
@@ -139,8 +153,24 @@ var mapStyles = [
 		{visibility: "off"}
 		]
 	}
-];
+	];
 
+	var mapOptions = {
+		center: {lat: 59.332309, lng: 18.064582},
+		zoom: 14,
+		mapTypeControl: false,
+		panControl: false,
+		zoomControl: false,
+		streetViewControl: false,
+		styles: mapStyles
+	};
+
+	map = new Map(mapOptions, mapStyles);
+	map.updateMarkers(placeData);
+};
+
+
+// ViewModel
 // Search
 function ViewModel() {
 	var self = this;
@@ -148,30 +178,40 @@ function ViewModel() {
 	//Data
 
 	self.searchQuery = ko.observable("Search");
-	self.searchResults = ko.observableArray(placeData);
 
+	self.searchResults = ko.computed(function() {
+		if(self.searchQuery() == "" || self.searchQuery() == "Search") {
+			return placeData;
+		}
+		else {
+			var results =[];
+			var excluded = [];
+			for(var i=0; i < placeData.length; i++) {
+				if(placeData[i].title.toLowerCase().indexOf(self.searchQuery().toLowerCase()) >=0) {
+					results.push(placeData[i]);
+				}
+			}
+			//map.updateMarkers(results);
+			return results;
+		}
+	});
 
 	//Behaviors
 
 	self.selectLocation = function(location) {
-		var i = placeData.indexOf(location);
-		infoWindows[i].open(map, markers[i]);
+		var i = self.searchResults().indexOf(location);
+		map.openInfoWindow(i);
 	}
 
-	self.search = function() {
-		if(self.searchQuery() == "" || self.searchQuery() == "Search") {
-			self.searchResults(placeData);
-			return;
-		}
-		self.searchResults.removeAll();
-		for(var i=0; i < placeData.length; i++) {
-			if(placeData[i].title.toLowerCase().indexOf(self.searchQuery().toLowerCase()) >=0) {
-				self.searchResults.push(placeData[i]);
-			}
-		}
-	}
+	self.searchQuery.subscribe(function(){
+		map.updateMarkers(self.searchResults());
+	})
 
-	self.searchQuery.subscribe(self.search);
+
+//TODO: Call update markers on searchResults
+	/*self.searchMarkers = function() {
+		map.updateMarkers(self.searchResults());
+	}*/
 
 };
 
