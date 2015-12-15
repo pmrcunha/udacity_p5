@@ -74,16 +74,8 @@ Map.prototype.openInfoWindow = function(i) {
 	this.infoWindows[i].open(this.map, this.markers[i]);
 };
 
-Map.prototype.clearMarkers = function() {
-	/*for(var i=0; i< this.markers.length; i++) {
-		self.markers[i].setMap(null);
-	}*/
-	self.markers = [];
-};
-
 Map.prototype.updateMarkers = function(searchResults) {
 	var self = this;
-	//self.clearMarkers();
 	for(var i=0; i<searchResults.length; i++) {
 		var markerOptions = {
 			position: searchResults[i].pos,
@@ -110,11 +102,11 @@ Map.prototype.updateMarkers = function(searchResults) {
 	}
 };
 
-/*Map.prototype.removeMarkers = function(excluded) {
-	for(var i=0; i<excluded.length; i++) {
-		if(excluded[i].title == this.markers)
+Map.prototype.filterMarkers = function(searchResults) {
+	if(/* an item from placeData is not on searchResults*/) {
+		/* That item's marker gets marker.setMap(null)*/
 	}
-}*/
+};
 
 var map;
 
@@ -191,7 +183,7 @@ function ViewModel() {
 					results.push(placeData[i]);
 				}
 			}
-			//map.updateMarkers(results);
+			//map.filterMarkers(results);
 			return results;
 		}
 	});
@@ -206,12 +198,6 @@ function ViewModel() {
 	self.searchQuery.subscribe(function(){
 		map.updateMarkers(self.searchResults());
 	})
-
-
-//TODO: Call update markers on searchResults
-	/*self.searchMarkers = function() {
-		map.updateMarkers(self.searchResults());
-	}*/
 
 };
 
