@@ -81,7 +81,7 @@ function getFoursquareRequestURL(foursquareVenueID) {
 
 function getFoursquareVenueData(i) {
 	$.getJSON(getFoursquareRequestURL(placeData[i].foursquareVenueID), function(data) {
-		//console.log(data.response.venue.name);
+		console.log(data.response.venue.name);
 		return data.response.venue.name;
 	});
 };

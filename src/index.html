@@ -13,20 +13,19 @@
 
 <body>
 	<header>
-		<input id="search-box" type="search" data-bind="textInput: searchQuery">
-		<div id="search-field" data-bind="visible: searchResults().length > 0">
-			<strong id="search-test" data-bind="text: searchQuery"></strong>
-		</div>
+		<input class="search-box" type="search" data-bind="textInput: searchQuery">
 	</header>
-	<section class="container">
-		<section class="map-container"><div id="map"></div></section>
+	<section id="container">
+		<section class="map-container">
+			<div id="map"></div>
+		</section>
 
 
 		<section class="list-container">
 			<ul data-bind="foreach: searchResults">
-				<li data-bind="click: $root.selectLocation">
-					<strong data-bind="text: title"></strong>
-					<span data-bind="text: category"></span>
+				<li class="list-item" data-bind="click: $root.selectLocation">
+					<strong class="list-item-title" data-bind="text: title"></strong>
+					<span class="list-item-category" data-bind="text: category"></span>
 				</li>
 			</ul>
 		</section>
