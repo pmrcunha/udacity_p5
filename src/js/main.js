@@ -7,65 +7,49 @@ var placeData = [
 		title: 'Fotografiska',
 		pos: {lat: 59.3178187, lng: 18.0858394},
 		category: 'Museum',
-		type: 'fun',
-		foursquareVenueID: '4bf57390706e20a1067daa98',
-		content: '<p>Banana1</p>'
+		foursquareVenueID: '4bf57390706e20a1067daa98'
 	},
 	{
 		title: 'Gröna Lund',
 		pos: {lat: 59.3233503, lng: 18.0963003},
 		category: 'Amusement Park',
-		type: 'fun',
-		foursquareVenueID: '4adcdaeef964a520a05a21e3',
-		content: '<p>Banana2</p>'
+		foursquareVenueID: '4adcdaeef964a520a05a21e3'
 	},
 	{
 		title: 'Moderna Museet',
 		pos: {lat: 59.3260426, lng: 18.084607},
 		category: 'Museum',
-		type: 'fun',
-		foursquareVenueID: '4adcdaeff964a520e45a21e3',
-		content: '<p>Banana3</p>'
+		foursquareVenueID: '4adcdaeff964a520e45a21e3'
 	},
 	{
 		title: 'Stadsbiblioteket',
 		pos: {lat: 59.3434101, lng: 18.0546555},
 		category: 'Library',
-		type: 'fun',
-		foursquareVenueID: '4adcdaeef964a520b65a21e3',
-		content: '<p>Banana4</p>'
+		foursquareVenueID: '4adcdaeef964a520b65a21e3'
 	},
 	{
 		title: "Skype",
 		pos: {lat: 59.3206951, lng: 18.0514177},
 		category: 'Tech Company',
-		type: 'work',
-		foursquareVenueID: '4c07887a8a81c9b651502790',
-		content: '<p>Banana5</p>'
+		foursquareVenueID: '4c07887a8a81c9b651502790'
 	},
 	{
 		title: 'Bonnier Museum',
 		pos: {lat: 59.3369941, lng: 18.0425881},
 		category: 'Museum',
-		type: 'fun',
-		foursquareVenueID: '4af1b187f964a52044e221e3',
-		content: '<p>Banana6</p>'
+		foursquareVenueID: '4af1b187f964a52044e221e3'
 	},
 	{
 		title: 'Google',
 		pos: {lat: 59.333404, lng: 18.0543282},
 		category: 'Tech Company',
-		type: 'work',
-		foursquareVenueID: '4bd8263335aad13afd2690f3',
-		content: '<p>Banana7</p>'
+		foursquareVenueID: '4bd8263335aad13afd2690f3'
 	},
 	{
 		title: 'Spotify',
 		pos: {lat: 59.3422246, lng: 18.0637341},
 		category: 'Tech Company',
-		type: 'work',
-		foursquareVenueID: '4ff1826fe4b0cf98814a6b9b',
-		content: '<p>Banana8</p>'
+		foursquareVenueID: '4ff1826fe4b0cf98814a6b9b'
 	}
 ];
 
@@ -79,11 +63,37 @@ function getFoursquareRequestURL(foursquareVenueID) {
 	return foursquareEP + foursquareVenueID + '?client_id=' + clientID + '&client_secret=' + clientSecret + '&v=20151220&m=foursquare';
 };
 
-function getFoursquareVenueData(i) {
+function checkIfDefined(data) {
+	if(typeof data !== 'undefined' && data !== null) {
+		return true;
+	}
+	return false;
+};
+
+var getFoursquareVenueData = function(i) {
 	$.getJSON(getFoursquareRequestURL(placeData[i].foursquareVenueID), function(data) {
-		console.log(data.response.venue.name);
-		return data.response.venue.name;
-	});
+		var FQresponse = data.response.venue;
+		/* If a property of the venue is undefined, we pass an empty string to the infoWindow constructor. */
+		placeData[i].FQdescription = checkIfDefined(FQresponse.description) ? '<p>' + FQresponse.description + '</p>' : '';
+		placeData[i].FQrating = checkIfDefined(FQresponse.rating) ? '<p>Foursquare rating: ' + FQresponse.rating + '</p>' : '';
+		placeData[i].FQurl = checkIfDefined(FQresponse.url) ? '<a href="' + FQresponse.url + '">Website</a>' : '';
+
+		map.infoWindows[i] = new google.maps.InfoWindow({
+			content: '<h1>' + placeData[i].title + '</h1>' +
+			'<h3>' + placeData[i].category + '</h3>' +
+			placeData[i].FQdescription +
+			placeData[i].FQrating +
+			placeData[i].FQurl
+		});
+
+	}).fail(function() {
+		map.infoWindows[i] = new google.maps.InfoWindow({
+		content: '<h1>' + placeData[i].title + '</h1>' +
+		'<h3>' + placeData[i].category + '</h3>' +
+		'<p>' + placeData[i].content + '</p>' +
+		'<p class="error">Foursquare info could not be loaded.</p>'
+	})
+	return 'Foursquare info could not be loaded.'});
 };
 
 //Google Maps API
@@ -95,21 +105,9 @@ var Map = function(mapOptions, mapStyles) {
 	this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
 };
 
-Map.prototype.toggleInfoWindow = function(i) {
-	var marker = this.markers[i];
-	infoWindow = this.infoWindows[i];
-	if(marker.getAnimation() !== null) {
-		marker.setAnimation(null);
-		infoWindow.close();
-	}
-	else {
-		marker.setAnimation(google.maps.Animation.BOUNCE);
-		infoWindow.open(this.map, marker);
-	}
-};
-
 Map.prototype.setupMarkers = function() {
 	var self = this;
+	self.clearMarkers();
 	for(var i=0; i<placeData.length; i++) {
 		var markerOptions = {
 			position: placeData[i].pos,
@@ -119,16 +117,6 @@ Map.prototype.setupMarkers = function() {
 		self.markers[i] = new google.maps.Marker(markerOptions);
 		self.markers[i].setMap(self.map);
 		self.markers[i].setAnimation(google.maps.Animation.DROP);
-
-			console.log(getFoursquareVenueData(i));
-
-
-		self.infoWindows[i] = new google.maps.InfoWindow({
-			content: '<h1>' + placeData[i].title + '</h1>' +
-			'<h3>' + placeData[i].category + '</h3>' +
-			'<p>' + placeData[i].content + '</p>' +
-			'<p>' + getFoursquareVenueData(i) + '</p>'
-		});
 
 		/* A closure is required to add a listener inside a loop,
 		 * otherwise the function will use the last value of the iterator.
@@ -162,6 +150,27 @@ Map.prototype.filterMarkers = function(searchResults) {
 				self.markers[m].setAnimation(google.maps.Animation.DROP);
 			}
 		})(i);
+	}
+};
+
+Map.prototype.setupInfoWindows = function(searchResults) {
+	var self = this;
+	self.infoWindows = [];
+	for(i=0; i<placeData.length; i++) {
+		getFoursquareVenueData(i); // for each -i- builds an info window in infoWindows
+	}
+};
+
+Map.prototype.toggleInfoWindow = function(i) {
+	var marker = this.markers[i];
+	var infoWindow = this.infoWindows[i];
+	if(marker.getAnimation() !== null) {
+		marker.setAnimation(null);
+		infoWindow.close();
+	}
+	else {
+		marker.setAnimation(google.maps.Animation.BOUNCE);
+		infoWindow.open(this.map, marker);
 	}
 };
 
@@ -216,6 +225,7 @@ function initMap() {
 
 	map = new Map(mapOptions, mapStyles);
 	map.setupMarkers();
+	map.setupInfoWindows(placeData);
 };
 
 // ViewModel
@@ -229,6 +239,10 @@ function ViewModel() {
 
 	self.searchResults = ko.computed(function() {
 		if(self.searchQuery() == "" || self.searchQuery() == "Search") {
+			if(typeof map !== 'undefined' && map !== null){
+				map.clearMarkers();
+				map.setupMarkers();
+			}
 			return placeData;
 		}
 		else {
@@ -247,9 +261,9 @@ function ViewModel() {
 
 	/* Clicking on the list pops up the info window */
 	self.selectLocation = function(location) {
-		var i = self.searchResults().indexOf(location);
+		var i = placeData.indexOf(location);
 		map.toggleInfoWindow(i);
-	}
+	};
 
 	/* When searchQuery is updated, filterMarkers runs */
 	self.searchQuery.subscribe(function(){
@@ -258,7 +272,5 @@ function ViewModel() {
 
 };
 
-// var only for debugging
-var VModel = new ViewModel();
-ko.applyBindings(VModel);
+ko.applyBindings(new ViewModel());
 
