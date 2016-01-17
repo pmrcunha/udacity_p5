@@ -1,4 +1,4 @@
-/* BASE */
+/* 1.0 Base */
 
 html, body {
 	height: 100%;
@@ -15,7 +15,7 @@ p, h1, h2, h3, strong, span {
 	font-family: "Helvetica Neue", "Arial", sans-serif;
 }
 
-/* LAYOUT */
+/* 2.0 Layout */
 
 header {
 	width: 100%;
@@ -33,7 +33,7 @@ header {
 	background-color: #BDD4DE;
 }
 
-/* MODULES */
+/* 3.0 Modules */
 
 .map-container {
 	min-width: 320px;
@@ -105,7 +105,3 @@ header {
 	width: 100%;
 	height: 100%;
 }
-
-
-
-/* STATES */

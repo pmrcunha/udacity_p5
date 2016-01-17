@@ -2,7 +2,7 @@
 
 // Data Model
 
-var placeData = [
+var locationData = [
 	{
 		title: 'Fotografiska',
 		pos: {lat: 59.3178187, lng: 18.0858394},
@@ -55,14 +55,17 @@ var placeData = [
 
 // Foursquare API
 
+//TODO: Create a server side function to provide the API keys without exposing them.
 var foursquareEP = 'https://api.foursquare.com/v2/venues/';
 var clientID = 'ABND2BJJYOCBN02BNPOIUXZL34AFIPQK4WC3DRAREHKVMPNQ';
 var clientSecret = 'NGNJHIY1DH13PHPRGDEUZCXKSISR404GPWOX4LBBFEBOZMYU';
 
+// Concatenates the URL for the AJAX request
 function getFoursquareRequestURL(foursquareVenueID) {
 	return foursquareEP + foursquareVenueID + '?client_id=' + clientID + '&client_secret=' + clientSecret + '&v=20151220&m=foursquare';
 };
 
+// Tests if a variable is defined. Used to test the venue parameters received from Foursquare.
 function checkIfDefined(data) {
 	if(typeof data !== 'undefined' && data !== null) {
 		return true;
@@ -70,27 +73,30 @@ function checkIfDefined(data) {
 	return false;
 };
 
+// Fetches venue data from Foursquare asynchronously, adds it to the data model and creates an infoWindow.
+// Receives an index for the venue in the data model (locationData). 
 var getFoursquareVenueData = function(i) {
-	$.getJSON(getFoursquareRequestURL(placeData[i].foursquareVenueID), function(data) {
+	$.getJSON(getFoursquareRequestURL(locationData[i].foursquareVenueID), function(data) {
 		var FQresponse = data.response.venue;
-		/* If a property of the venue is undefined, we pass an empty string to the infoWindow constructor. */
-		placeData[i].FQdescription = checkIfDefined(FQresponse.description) ? '<p>' + FQresponse.description + '</p>' : '';
-		placeData[i].FQrating = checkIfDefined(FQresponse.rating) ? '<p>Foursquare rating: ' + FQresponse.rating + '</p>' : '';
-		placeData[i].FQurl = checkIfDefined(FQresponse.url) ? '<a href="' + FQresponse.url + '">Website</a>' : '';
-
+		// Adding the venue info to the data model
+		// If a property of the venue is undefined, we pass an empty string to the infoWindow constructor.
+		locationData[i].FQdescription = checkIfDefined(FQresponse.description) ? '<p>' + FQresponse.description + '</p>' : '';
+		locationData[i].FQrating = checkIfDefined(FQresponse.rating) ? '<p>Foursquare rating: ' + FQresponse.rating + '</p>' : '';
+		locationData[i].FQurl = checkIfDefined(FQresponse.url) ? '<a href="' + FQresponse.url + '">Website</a>' : '';
+		// Creating the Info Windows
 		map.infoWindows[i] = new google.maps.InfoWindow({
-			content: '<h1>' + placeData[i].title + '</h1>' +
-			'<h3>' + placeData[i].category + '</h3>' +
-			placeData[i].FQdescription +
-			placeData[i].FQrating +
-			placeData[i].FQurl
+			content: '<h1>' + locationData[i].title + '</h1>' +
+			'<h3>' + locationData[i].category + '</h3>' +
+			locationData[i].FQdescription +
+			locationData[i].FQrating +
+			locationData[i].FQurl
 		});
-
+		// Fallback function
 	}).fail(function() {
 		map.infoWindows[i] = new google.maps.InfoWindow({
-		content: '<h1>' + placeData[i].title + '</h1>' +
-		'<h3>' + placeData[i].category + '</h3>' +
-		'<p>' + placeData[i].content + '</p>' +
+		content: '<h1>' + locationData[i].title + '</h1>' +
+		'<h3>' + locationData[i].category + '</h3>' +
+		'<p>' + locationData[i].content + '</p>' +
 		'<p class="error">Foursquare info could not be loaded.</p>'
 	})
 	return 'Foursquare info could not be loaded.'});
@@ -105,13 +111,14 @@ var Map = function(mapOptions, mapStyles) {
 	this.map = new google.maps.Map(document.getElementById('map'), mapOptions);
 };
 
+// Builds the location markers, right after the map is instantiated.
 Map.prototype.setupMarkers = function() {
 	var self = this;
 	self.clearMarkers();
-	for(var i=0; i<placeData.length; i++) {
+	for(var i=0; i<locationData.length; i++) {
 		var markerOptions = {
-			position: placeData[i].pos,
-			title: placeData[i].title
+			position: locationData[i].pos,
+			title: locationData[i].title
 		};
 
 		self.markers[i] = new google.maps.Marker(markerOptions);
@@ -138,11 +145,12 @@ Map.prototype.clearMarkers = function() {
 	}
 };
 
+// Reveals the location markers that match the search query. Runs everytime the search fiels is edited.
 Map.prototype.filterMarkers = function(searchResults) {
 	var self = this;
 	self.clearMarkers();
 	for(i=0; i<searchResults.length; i++) {
-		var m = placeData.indexOf(searchResults[i]); //m is the index in PlaceData of a location that exists in searchResults (argument)
+		var m = locationData.indexOf(searchResults[i]); //m is the index in locationData of a location that exists in searchResults (argument)
 
 		(function(_i) {
 			if(m >= 0) {
@@ -153,14 +161,16 @@ Map.prototype.filterMarkers = function(searchResults) {
 	}
 };
 
+// Builds all the info windows, after the map is intantiated.
 Map.prototype.setupInfoWindows = function(searchResults) {
 	var self = this;
 	self.infoWindows = [];
-	for(i=0; i<placeData.length; i++) {
-		getFoursquareVenueData(i); // for each -i- builds an info window in infoWindows
+	for(i=0; i<locationData.length; i++) {
+		getFoursquareVenueData(i); // this function builds the infoWindow for each location.
 	}
 };
 
+// Opens or closes an info window, and starts or stops the marker animation.
 Map.prototype.toggleInfoWindow = function(i) {
 	var marker = this.markers[i];
 	var infoWindow = this.infoWindows[i];
@@ -174,8 +184,10 @@ Map.prototype.toggleInfoWindow = function(i) {
 	}
 };
 
+// The instantiated map has to be on global scope, for Knockout to be able to reach it.
 var map;
 
+// Callback function for the Google Maps API. This function instantiates the map, creates the markers, and the info Windows.
 function initMap() {
 
 	// Google Maps API Styling
@@ -225,31 +237,34 @@ function initMap() {
 
 	map = new Map(mapOptions, mapStyles);
 	map.setupMarkers();
-	map.setupInfoWindows(placeData);
+	map.setupInfoWindows(locationData);
 };
 
 // ViewModel
-// Search
 function ViewModel() {
 	var self = this;
 
-	//Data
-
+	//Search
+	// Get the search query from the text field.
 	self.searchQuery = ko.observable("Search");
 
+	// Returns a list of locations that match the search criteria, and filters the markers.
 	self.searchResults = ko.computed(function() {
+		// Show all locations if the search field is empty or unedited.
 		if(self.searchQuery() == "" || self.searchQuery() == "Search") {
+			// Reset the markers. These functions can't run before the map is intantiated.
 			if(typeof map !== 'undefined' && map !== null){
 				map.clearMarkers();
 				map.setupMarkers();
 			}
-			return placeData;
+			return locationData;
 		}
 		else {
 			var results =[];
-			for(var i=0; i < placeData.length; i++) {
-				if(placeData[i].title.toLowerCase().indexOf(self.searchQuery().toLowerCase()) >=0) {
-					results.push(placeData[i]);
+			for(var i=0; i < locationData.length; i++) {
+				// indexOf returns the index of the first occurrence of the search query in the location's title. If not present, returns -1.
+				if(locationData[i].title.toLowerCase().indexOf(self.searchQuery().toLowerCase()) >=0) {
+					results.push(locationData[i]); // Every location that partially matches the search query gets pushed to results.
 				}
 			}
 			map.filterMarkers(results);
@@ -257,15 +272,13 @@ function ViewModel() {
 		}
 	});
 
-	//Behaviors
-
-	/* Clicking on the list pops up the info window */
+	/* Clicking on the location name on the list pops up the info window */
 	self.selectLocation = function(location) {
-		var i = placeData.indexOf(location);
+		var i = locationData.indexOf(location);
 		map.toggleInfoWindow(i);
 	};
 
-	/* When searchQuery is updated, filterMarkers runs */
+	/* Everytime the search field is edited, and searchQuery is updated, filterMarkers runs. */
 	self.searchQuery.subscribe(function(){
 		map.filterMarkers(self.searchResults());
 	});
