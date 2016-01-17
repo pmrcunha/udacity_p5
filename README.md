@@ -2,15 +2,15 @@
 
 This project combines a map, a list and a search function, working together.
 The technologies used are:
-*Google Maps API
-*Knockout.js
-*jQuery/AJAX
-*Foursquare API
+* Google Maps API
+* Knockout.js
+* jQuery/AJAX
+* Foursquare API
 
 ###Development Dependencies
 
-*Grunt
-*Bower
+* Grunt
+* Bower
 
 ###Installing
 
