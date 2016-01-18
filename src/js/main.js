@@ -56,14 +56,14 @@ var locationData = [
 // Foursquare API
 
 //TODO: Create a server side function to provide the API keys without exposing them.
-var foursquareEP = 'https://api.foursquare.com/v2/venues/';
-var clientID = 'ABND2BJJYOCBN02BNPOIUXZL34AFIPQK4WC3DRAREHKVMPNQ';
-var clientSecret = 'NGNJHIY1DH13PHPRGDEUZCXKSISR404GPWOX4LBBFEBOZMYU';
+var FOURSQUARE_EP = 'https://api.foursquare.com/v2/venues/';
+var CLIENT_ID = 'ABND2BJJYOCBN02BNPOIUXZL34AFIPQK4WC3DRAREHKVMPNQ';
+var CLIENT_SECRET = 'NGNJHIY1DH13PHPRGDEUZCXKSISR404GPWOX4LBBFEBOZMYU';
 
 // Concatenates the URL for the AJAX request
 function getFoursquareRequestURL(foursquareVenueID) {
-	return foursquareEP + foursquareVenueID + '?client_id=' + clientID + '&client_secret=' + clientSecret + '&v=20151220&m=foursquare';
-};
+	return FOURSQUARE_EP + foursquareVenueID + '?client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET + '&v=20151220&m=foursquare';
+}
 
 // Tests if a variable is defined. Used to test the venue parameters received from Foursquare.
 function checkIfDefined(data) {
@@ -71,7 +71,7 @@ function checkIfDefined(data) {
 		return true;
 	}
 	return false;
-};
+}
 
 // Fetches venue data from Foursquare asynchronously, adds it to the data model and creates an infoWindow.
 // Receives an index for the venue in the data model (locationData). 
@@ -82,7 +82,7 @@ var getFoursquareVenueData = function(i) {
 		// If a property of the venue is undefined, we pass an empty string to the infoWindow constructor.
 		locationData[i].FQdescription = checkIfDefined(FQresponse.description) ? '<p>' + FQresponse.description + '</p>' : '';
 		locationData[i].FQrating = checkIfDefined(FQresponse.rating) ? '<p>Foursquare rating: ' + FQresponse.rating + '</p>' : '';
-		locationData[i].FQurl = checkIfDefined(FQresponse.url) ? '<a href="' + FQresponse.url + '">Website</a>' : '';
+		locationData[i].FQurl = checkIfDefined(FQresponse.url) ? '<a href="' + FQresponse.url + '" target="_blank">Website</a>' : '';
 		// Creating the Info Windows
 		map.infoWindows[i] = new google.maps.InfoWindow({
 			content: '<h1>' + locationData[i].title + '</h1>' +
@@ -91,6 +91,11 @@ var getFoursquareVenueData = function(i) {
 			locationData[i].FQrating +
 			locationData[i].FQurl
 		});
+		// Stop marker animation if the user closes the infoWindow
+		google.maps.event.addListener(map.infoWindows[i], 'closeclick', function(){
+			map.markers[i].setAnimation(null);
+		});
+
 		// Fallback function
 	}).fail(function() {
 		map.infoWindows[i] = new google.maps.InfoWindow({
@@ -98,8 +103,13 @@ var getFoursquareVenueData = function(i) {
 		'<h3>' + locationData[i].category + '</h3>' +
 		'<p>' + locationData[i].content + '</p>' +
 		'<p class="error">Foursquare info could not be loaded.</p>'
-	})
-	return 'Foursquare info could not be loaded.'});
+		});
+		// Stop marker animation if the user closes the infoWindow
+		google.maps.event.addListener(map.infoWindows[i], 'closeclick', function(){
+			map.markers[i].setAnimation(null);
+		});
+	return 'Foursquare info could not be loaded.';
+	});
 };
 
 //Google Maps API
@@ -115,7 +125,7 @@ var Map = function(mapOptions, mapStyles) {
 Map.prototype.setupMarkers = function() {
 	var self = this;
 	self.clearMarkers();
-	for(var i=0; i<locationData.length; i++) {
+	for(var i=0, len=locationData.length; i<len; i++) {
 		var markerOptions = {
 			position: locationData[i].pos,
 			title: locationData[i].title
@@ -138,7 +148,7 @@ Map.prototype.setupMarkers = function() {
 
 Map.prototype.clearMarkers = function() {
 	var self = this;
-	for(var i=0; i<self.markers.length; i++) {
+	for(var i=0, len=self.markers.length; i<len; i++) {
 		(function(_i) {
 			self.markers[_i].setMap(null);
 		})(i);
@@ -149,24 +159,31 @@ Map.prototype.clearMarkers = function() {
 Map.prototype.filterMarkers = function(searchResults) {
 	var self = this;
 	self.clearMarkers();
-	for(i=0; i<searchResults.length; i++) {
+	for(var i=0, len=searchResults.length; i<len; i++) {
 		var m = locationData.indexOf(searchResults[i]); //m is the index in locationData of a location that exists in searchResults (argument)
-
-		(function(_i) {
-			if(m >= 0) {
-				self.markers[m].setMap(self.map);
-				self.markers[m].setAnimation(google.maps.Animation.DROP);
-			}
-		})(i);
+		if(m >= 0) {
+			self.markers[m].setMap(self.map);
+			self.markers[m].setAnimation(google.maps.Animation.DROP);
+		}	
 	}
 };
 
 // Builds all the info windows, after the map is intantiated.
-Map.prototype.setupInfoWindows = function(searchResults) {
+Map.prototype.setupInfoWindows = function() {
 	var self = this;
 	self.infoWindows = [];
-	for(i=0; i<locationData.length; i++) {
+	for(var i=0, len=locationData.length; i<len; i++) {
 		getFoursquareVenueData(i); // this function builds the infoWindow for each location.
+	}
+};
+
+
+
+Map.prototype.clearInfoWindows = function() {
+	var self = this;
+	for(var i=0, len=locationData.length; i<len; i++) {
+		self.markers[i].setAnimation(null);
+		self.infoWindows[i].close();
 	}
 };
 
@@ -179,6 +196,7 @@ Map.prototype.toggleInfoWindow = function(i) {
 		infoWindow.close();
 	}
 	else {
+		this.clearInfoWindows();
 		marker.setAnimation(google.maps.Animation.BOUNCE);
 		infoWindow.open(this.map, marker);
 	}
@@ -237,8 +255,8 @@ function initMap() {
 
 	map = new Map(mapOptions, mapStyles);
 	map.setupMarkers();
-	map.setupInfoWindows(locationData);
-};
+	map.setupInfoWindows();
+}
 
 // ViewModel
 function ViewModel() {
@@ -246,12 +264,12 @@ function ViewModel() {
 
 	//Search
 	// Get the search query from the text field.
-	self.searchQuery = ko.observable("Search");
+	self.searchQuery = ko.observable("");
 
 	// Returns a list of locations that match the search criteria, and filters the markers.
 	self.searchResults = ko.computed(function() {
 		// Show all locations if the search field is empty or unedited.
-		if(self.searchQuery() == "" || self.searchQuery() == "Search") {
+		if(self.searchQuery() === "") {
 			// Reset the markers. These functions can't run before the map is intantiated.
 			if(typeof map !== 'undefined' && map !== null){
 				map.clearMarkers();
@@ -261,7 +279,7 @@ function ViewModel() {
 		}
 		else {
 			var results =[];
-			for(var i=0; i < locationData.length; i++) {
+			for(var i=0, len=locationData.length; i<len; i++) {
 				// indexOf returns the index of the first occurrence of the search query in the location's title. If not present, returns -1.
 				if(locationData[i].title.toLowerCase().indexOf(self.searchQuery().toLowerCase()) >=0) {
 					results.push(locationData[i]); // Every location that partially matches the search query gets pushed to results.
@@ -282,8 +300,6 @@ function ViewModel() {
 	self.searchQuery.subscribe(function(){
 		map.filterMarkers(self.searchResults());
 	});
-
-};
+}
 
 ko.applyBindings(new ViewModel());
-

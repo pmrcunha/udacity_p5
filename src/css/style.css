@@ -1,6 +1,7 @@
 /* 1.0 Base */
 
-html, body {
+html,
+body {
 	height: 100%;
 	width: 100%;
 	margin: 0;
@@ -11,7 +12,12 @@ html, body {
 	box-sizing: border-box;
 }
 
-p, h1, h2, h3, strong, span {
+p,
+h1,
+h2,
+h3,
+strong,
+span {
 	font-family: "Helvetica Neue", "Arial", sans-serif;
 }
 
