@@ -1,4 +1,13 @@
-/* main.js*/
+/** 
+ * @description
+ * main.js contains the Model and ViewModel of the MapApp application.
+ * 
+ * @author
+ * Paulo Cunha
+ *
+ */
+
+'use strict';
 
 // Data Model
 
@@ -204,6 +213,11 @@ Map.prototype.toggleInfoWindow = function(i) {
 
 // The instantiated map has to be on global scope, for Knockout to be able to reach it.
 var map;
+
+// Fallback function for the Google Maps API.
+function errorMap() {
+	alert('There was a problem connecting to Google. Please check your Internet connection.');
+}
 
 // Callback function for the Google Maps API. This function instantiates the map, creates the markers, and the info Windows.
 function initMap() {

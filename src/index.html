@@ -15,9 +15,9 @@
 	<header>
 		<input class="search-box" type="search" data-bind="textInput: searchQuery" placeholder="Search">
 	</header>
-	<section id="container">
+	<section class="container">
 		<section class="map-container">
-			<div id="map"></div>
+			<div id="map" class="map"></div>
 		</section>
 
 
@@ -35,7 +35,8 @@
 	<script src="js/main.js"></script>
 	<!-- TODO: wrap the API key into a server side function that is called by my JS script -->
 	<script async defer
-	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChX2asEnm5W2cdGJJv-E-gBrJjKgjSyHI&callback=initMap">
+	src="https://maps.googleapis.com/maps/api/js?key=AIzaSyChX2asEnm5W2cdGJJv-E-gBrJjKgjSyHI&callback=initMap"
+	onerror="errorMap()">
 	</script>
 </body>
 </html>

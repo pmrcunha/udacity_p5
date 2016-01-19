@@ -27,16 +27,16 @@ header {
 	width: 100%;
 	height: 75px;
 	padding: 25px 0 0;
-	background-color: #E58E6C;
+	background-color: #e58e6c;
 }
 
-#container {
+.container {
 	width: 100%;
 	height: 100%;
 	padding: 10px;
 	display: flex;
 	flex-wrap: wrap;
-	background-color: #BDD4DE;
+	background-color: #bdd4de;
 }
 
 /* 3.0 Modules */
@@ -51,7 +51,7 @@ header {
 	width: 100%;
 	overflow: auto;
 	padding: 30px;
-	background-color: #3F5765;
+	background-color: #3f5765;
 	color: white;
 }
 
@@ -84,7 +84,7 @@ header {
 }
 
 .list-item:hover {
-	border: 2px solid #E58E6C;
+	border: 2px solid #e58e6c;
 }
 
 .list-item-title {
@@ -101,13 +101,13 @@ header {
 	display: block;
 	margin: auto;
 	vertical-align: middle;
-	background-color: #E5C3BA;
+	background-color: #e5c3ba;
 	border: none;
 	border-radius: 15px;
 	padding: 0 10px;
 }
 
-#map {
+.map {
 	width: 100%;
 	height: 100%;
 }
