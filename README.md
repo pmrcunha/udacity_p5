@@ -12,11 +12,14 @@ The technologies used are:
 * Grunt
 * Bower
 
-###Installing
+###Running the app
+
+* Open the app at <http://pmrcunha.github.io/udacity_p5/>
+
+###Building the app
 
 1. Run ```bower install``` and ```npm install``` to install the project's dependencies, specified in bower.json and package.json.
 
 2. Run ```grunt``` to create the built project.
 
 3. Open the app at build/index.html, using a browser.
-
