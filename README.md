@@ -14,7 +14,7 @@ The technologies used are:
 
 ###Running the app
 
-* Open the app at [http://pmrcunha.github.io/udacity_p5/]
+* Open the app at <http://pmrcunha.github.io/udacity_p5/>
 
 ###Building the app
 
