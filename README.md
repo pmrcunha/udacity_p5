@@ -7,6 +7,8 @@ The technologies used are:
 *   jQuery/AJAX
 *   Foursquare API
 
+![screenshot](./screenshot.png "screenshot")
+
 ### Development Dependencies
 
 *   Grunt
