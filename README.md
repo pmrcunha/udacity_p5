@@ -1,25 +1,25 @@
-#Udacity FEND - P5: Neighborhood Map Project
+# Udacity FEND - P5: Neighborhood Map Project
 
 This project combines a map, a list and a search function, working together.
 The technologies used are:
-* Google Maps API
-* Knockout.js
-* jQuery/AJAX
-* Foursquare API
+*   Google Maps API
+*   Knockout.js
+*   jQuery/AJAX
+*   Foursquare API
 
-###Development Dependencies
+### Development Dependencies
 
-* Grunt
-* Bower
+*   Grunt
+*   Bower
 
-###Running the app
+### Running the app
 
-* Open the app at <http://pmrcunha.github.io/udacity_p5/>
+*   Open the app at <http://pmrcunha.github.io/udacity_p5/>
 
-###Building the app
+### Building the app
 
-1. Run ```bower install``` and ```npm install``` to install the project's dependencies, specified in bower.json and package.json.
+1.  Run ```bower install``` and ```npm install``` to install the project's dependencies, specified in bower.json and package.json.
 
-2. Run ```grunt``` to create the built project.
+2.  Run ```grunt``` to create the built project.
 
-3. Open the app at build/index.html, using a browser.
+3.  Open the app at build/index.html, using a browser.
